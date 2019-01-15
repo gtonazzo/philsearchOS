@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
-using philsearch.Models;
 using System.Data;
-using System.Text;
+using System.Data.SQLite;
 
 namespace philsearch.Models
 {
@@ -23,21 +19,21 @@ namespace philsearch.Models
             this.SemanticNetworkWS = semanticNetworkWS;
         }
 
-        private MySqlConnection GetConnection()
+        private SQLiteConnection GetConnection()
         {
-            return new MySqlConnection(ConnectionString);
+            return new SQLiteConnection(ConnectionString);
         }
 
         public List<Article> GetArticles(string filter)
         {
             List<Article> list = new List<Article>();
 
-            using (MySqlConnection conn = GetConnection())
+            using (SQLiteConnection conn = GetConnection())
             {
                 conn.Open();
-                MySqlCommand cmd = new MySqlCommand("select * from articles where art_id in (" + filter + ")", conn);
+                SQLiteCommand cmd = new SQLiteCommand("select * from articles where art_id in (" + filter + ")", conn);
 
-                using (MySqlDataAdapter sda = new MySqlDataAdapter(cmd))
+                using (SQLiteDataAdapter sda = new SQLiteDataAdapter(cmd))
                 {
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -76,7 +72,7 @@ namespace philsearch.Models
             Article result = new Article();
 
             DataSet ds = new DataSet("ArticleInfo");
-            using (MySqlConnection conn = GetConnection())
+            using (SQLiteConnection conn = GetConnection())
             {
                 conn.Open();
                 string query = "";
@@ -85,15 +81,15 @@ namespace philsearch.Models
                 query = query + "Select * from articles_categories Where art_id = '" + artId + "';";
                 query = query + "Select * from articles_features Where art_id = '" + artId + "';";
                 query = query + "Select a.art_id, b.* from articles_biblio a inner join biblio b on a.biblio_id = b.biblio_id Where art_id = '" + artId + "';";
-                MySqlCommand cmd = new MySqlCommand(query, conn);
+                SQLiteCommand cmd = new SQLiteCommand(query, conn);
 
-                using (MySqlDataAdapter sda = new MySqlDataAdapter(cmd))
+                using (SQLiteDataAdapter sda = new SQLiteDataAdapter(cmd))
                 {   /*
-                    MySqlCommand cmd = new MySqlCommand("usp_GetArticleInfo", conn);
+                    SQLiteCommand cmd = new SQLiteCommand("usp_GetArticleInfo", conn);
                     cmd.Parameters.AddWithValue("@artId", artId);
                     cmd.CommandType = CommandType.StoredProcedure;
                     */
-                    MySqlDataAdapter da = new MySqlDataAdapter();
+                    SQLiteDataAdapter da = new SQLiteDataAdapter();
                     da.SelectCommand = cmd;
                     da.Fill(ds);
 
@@ -194,10 +190,10 @@ namespace philsearch.Models
         {
             List<String> list = new List<String>() { };
 
-            using (MySqlConnection conn = GetConnection())
+            using (SQLiteConnection conn = GetConnection())
             {
                 conn.Open();
-                MySqlCommand cmd = new MySqlCommand("select * from articles_authors where art_id = '" + artId + "'", conn);
+                SQLiteCommand cmd = new SQLiteCommand("select * from articles_authors where art_id = '" + artId + "'", conn);
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -214,10 +210,10 @@ namespace philsearch.Models
         {
             List<String> list = new List<String>();
 
-            using (MySqlConnection conn = GetConnection())
+            using (SQLiteConnection conn = GetConnection())
             {
                 conn.Open();
-                MySqlCommand cmd = new MySqlCommand("select * from articles_categories where art_id = '" + artId + "'", conn);
+                SQLiteCommand cmd = new SQLiteCommand("select * from articles_categories where art_id = '" + artId + "'", conn);
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -234,10 +230,10 @@ namespace philsearch.Models
         {
             List<Article.Reference> list = new List<Article.Reference>();
 
-            using (MySqlConnection conn = GetConnection())
+            using (SQLiteConnection conn = GetConnection())
             {
                 conn.Open();
-                MySqlCommand cmd = new MySqlCommand("Select b.* from articles_biblio a inner join biblio b on a.biblio_id = b.biblio_id  where art_id = '" + artId + "'", conn);
+                SQLiteCommand cmd = new SQLiteCommand("Select b.* from articles_biblio a inner join biblio b on a.biblio_id = b.biblio_id  where art_id = '" + artId + "'", conn);
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -268,10 +264,10 @@ namespace philsearch.Models
         {
             List<Article.Feature> list = new List<Article.Feature>();
 
-            using (MySqlConnection conn = GetConnection())
+            using (SQLiteConnection conn = GetConnection())
             {
                 conn.Open();
-                MySqlCommand cmd = new MySqlCommand("select * from articles_features where art_id = '" + artId + "'", conn);
+                SQLiteCommand cmd = new SQLiteCommand("select * from articles_features where art_id = '" + artId + "'", conn);
 
                 using (var reader = cmd.ExecuteReader())
                 {
